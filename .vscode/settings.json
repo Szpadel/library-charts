@@ -1,0 +1,36 @@
+{
+    "cSpell.enableFiletypes": [
+        "helm",
+        "yaml"
+    ],
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/quintush/helm-unittest/master/schema/helm-testsuite.json": [
+            "charts/*/tests/*_test.yaml",
+            "testing-charts/*/tests/*/*_test.yaml",
+        ]
+    },
+    "cSpell.words": [
+        "autoload",
+        "blackfire",
+        "fastcgi",
+        "linkerd",
+        "nodelay",
+        "nopush",
+        "opcache",
+        "orocommerce",
+        "proto",
+        "sendfile",
+        "Symfony",
+        "timedout",
+        "websockets",
+        "xdebug"
+    ],
+    "triggerTaskOnSave.tasks": {
+        "Helm unittest": [
+            "charts/*/templates/**",
+            "testing-charts/*/tests/*/*_test.yaml",
+        ]
+    },
+    "triggerTaskOnSave.restart": true,
+    "triggerTaskOnSave.showStatusBarToggle": true
+}

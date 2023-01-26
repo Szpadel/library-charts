@@ -1,0 +1,91 @@
+suite: ingress service reference
+templates:
+  - common.yaml
+tests:
+  - it: default should pass <1.19
+    capabilities:
+      majorVersion: '1'
+      minorVersion: '18'
+    set:
+      ingress.main.enabled: true
+    asserts:
+      - documentIndex: &IngressDocument 2
+        isKind:
+          of: Ingress
+      - documentIndex: *IngressDocument
+        equal:
+          path: spec.rules[0].http.paths[0].backend
+          value:
+            serviceName: RELEASE-NAME-common-test
+            servicePort: null
+
+  - it: default should pass 1.19+
+    capabilities:
+      majorVersion: '1'
+      minorVersion: '19'
+    set:
+      ingress.main.enabled: true
+    asserts:
+      - documentIndex: &IngressDocument 2
+        isKind:
+          of: Ingress
+      - documentIndex: *IngressDocument
+        equal:
+          path: spec.rules[0].http.paths[0].backend
+          value:
+            service:
+              name: RELEASE-NAME-common-test
+              port:
+                number: null
+
+  - it: custom service reference should pass <1.19
+    capabilities:
+      majorVersion: '1'
+      minorVersion: '18'
+    set:
+      ingress.main:
+        enabled: true
+        hosts:
+          - host: chart-test.local
+            paths:
+              - path: /
+                service:
+                  name: pathService
+                  port: 1234
+    asserts:
+      - documentIndex: &IngressDocument 2
+        isKind:
+          of: Ingress
+      - documentIndex: *IngressDocument
+        equal:
+          path: spec.rules[0].http.paths[0].backend
+          value:
+            serviceName: pathService
+            servicePort: 1234
+
+  - it: custom service reference should pass 1.19+
+    capabilities:
+      majorVersion: '1'
+      minorVersion: '19'
+    set:
+      ingress.main:
+        enabled: true
+        hosts:
+          - host: chart-test.local
+            paths:
+              - path: /
+                service:
+                  name: pathService
+                  port: 1234
+    asserts:
+      - documentIndex: &IngressDocument 2
+        isKind:
+          of: Ingress
+      - documentIndex: *IngressDocument
+        equal:
+          path: spec.rules[0].http.paths[0].backend
+          value:
+            service:
+              name: pathService
+              port:
+                number: 1234

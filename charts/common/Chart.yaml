@@ -1,0 +1,12 @@
+apiVersion: v2
+name: common
+description: Function library for charts
+type: library
+version: 1.0.0
+kubeVersion: ">=1.16.0-0"
+keywords:
+  - common
+home: https://github.com/Szpadel/library-charts
+maintainers:
+- name: Szpadel
+  email: piotrekrogowski@gmail.com
