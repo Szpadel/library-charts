@@ -3,17 +3,15 @@ templates:
   - common.yaml
 tests:
   - it: default metadata should pass
+    documentIndex: &ControllerDoc 0
     set:
       controller.type: statefulset
     asserts:
-      - documentIndex: &ControllerDoc 0
-        isKind:
+      - isKind:
           of: StatefulSet
-      - documentIndex: *ControllerDoc
-        isNull:
+      - isNull:
           path: metadata.annotations
-      - documentIndex: *ControllerDoc
-        equal:
+      - equal:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
@@ -22,6 +20,7 @@ tests:
             helm.sh/chart: common-test-0.1.0
 
   - it: custom metadata should pass
+    documentIndex: *ControllerDoc
     set:
       controller:
         type: statefulset
@@ -30,16 +29,13 @@ tests:
         labels:
           test_label: test
     asserts:
-      - documentIndex: &ControllerDoc 0
-        isKind:
+      - isKind:
           of: StatefulSet
-      - documentIndex: *ControllerDoc
-        equal:
+      - equal:
           path: metadata.annotations
           value:
             test_annotation: test
-      - documentIndex: *ControllerDoc
-        equal:
+      - equal:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
@@ -49,6 +45,7 @@ tests:
             test_label: test
 
   - it: custom metadata with global metadata should pass
+    documentIndex: *ControllerDoc
     set:
       global:
         labels:
@@ -62,17 +59,14 @@ tests:
         labels:
           test_label: test
     asserts:
-      - documentIndex: &ControllerDoc 0
-        isKind:
+      - isKind:
           of: StatefulSet
-      - documentIndex: *ControllerDoc
-        equal:
+      - equal:
           path: metadata.annotations
           value:
             global_annotation: test
             test_annotation: test
-      - documentIndex: *ControllerDoc
-        equal:
+      - equal:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
@@ -81,3 +75,23 @@ tests:
             global_label: test
             helm.sh/chart: common-test-0.1.0
             test_label: test
+
+  - it: should include additional selector labels
+    documentIndex: *ControllerDoc
+    set:
+      controller:
+        type: statefulset
+        selectorLabels:
+          role: some-role
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - equal:
+          path: spec.selector.matchLabels
+          value: &selectorLabels
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: common-test
+            role: some-role
+      - equal:
+          path: spec.template.metadata.labels
+          value: *selectorLabels

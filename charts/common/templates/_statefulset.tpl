@@ -29,8 +29,9 @@ spec:
       partition: {{ .Values.controller.rollingUpdate.partition }}
     {{- end }}
   selector:
-    matchLabels:
-      {{- include "common.labels.selectorLabels" . | nindent 6 }}
+    {{- with (merge (.Values.controller.selectorLabels | default dict) (include "common.labels.selectorLabels" . | fromYaml)) }}
+    matchLabels: {{- toYaml . | nindent 6 }}
+    {{- end }}
   serviceName: {{ include "common.names.fullname" . }}
   template:
     metadata:
@@ -39,7 +40,9 @@ spec:
         {{- . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "common.labels.selectorLabels" . | nindent 8 }}
+        {{- with (merge (.Values.controller.selectorLabels | default dict) (include "common.labels.selectorLabels" . | fromYaml)) }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

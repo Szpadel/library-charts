@@ -28,6 +28,7 @@
     "triggerTaskOnSave.tasks": {
         "Helm unittest": [
             "charts/*/templates/**",
+            "charts/*/values.yaml",
             "testing-charts/*/tests/*/*_test.yaml"
         ],
         "pre-commit": [

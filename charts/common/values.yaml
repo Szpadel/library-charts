@@ -18,6 +18,9 @@ controller:
   annotations: {}
   # -- Set labels on the deployment/statefulset/daemonset
   labels: {}
+  # -- Set selector labels on the deployment/statefulset/daemonset
+  selectorLabels:
+    role: primary
   # -- Number of desired pods
   replicas: 1
   # -- Set the controller upgrade strategy
@@ -276,6 +279,10 @@ service:
 
     # -- Provide additional labels which may be required.
     labels: {}
+
+    # -- Provide additional labels used for selector, make sure deployments also include them.
+    selectorLabels:
+      role: primary
 
     # -- Configure the Service port information here.
     # Additional ports can be added by adding a dictionary key similar to the 'http' service.

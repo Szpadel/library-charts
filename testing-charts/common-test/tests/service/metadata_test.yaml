@@ -7,11 +7,9 @@ tests:
       - documentIndex: &ServiceDocument 1
         isKind:
           of: Service
-      - documentIndex: *ServiceDocument
-        isNull:
+      - isNull:
           path: metadata.annotations
-      - documentIndex: *ServiceDocument
-        equal:
+      - equal:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
@@ -20,6 +18,7 @@ tests:
             helm.sh/chart: common-test-0.1.0
 
   - it: custom metadata should pass
+    documentIndex: *ServiceDocument
     set:
       service:
         main:
@@ -28,16 +27,13 @@ tests:
           labels:
             test_label: test
     asserts:
-      - documentIndex: &ServiceDocument 1
-        isKind:
+      - isKind:
           of: Service
-      - documentIndex: *ServiceDocument
-        equal:
+      - equal:
           path: metadata.annotations
           value:
             test_annotation: test
-      - documentIndex: *ServiceDocument
-        equal:
+      - equal:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
@@ -47,6 +43,7 @@ tests:
             test_label: test
 
   - it: custom metadata with global metadata should pass
+    documentIndex: *ServiceDocument
     set:
       global:
         labels:
@@ -60,17 +57,14 @@ tests:
           labels:
             test_label: test
     asserts:
-      - documentIndex: &ServiceDocument 1
-        isKind:
+      - isKind:
           of: Service
-      - documentIndex: *ServiceDocument
-        equal:
+      - equal:
           path: metadata.annotations
           value:
             global_annotation: test
             test_annotation: test
-      - documentIndex: *ServiceDocument
-        equal:
+      - equal:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
@@ -79,3 +73,20 @@ tests:
             global_label: test
             helm.sh/chart: common-test-0.1.0
             test_label: test
+
+  - it: should allow for extra selector in service
+    documentIndex: *ServiceDocument
+    set:
+      service:
+        main:
+          selectorLabels:
+            role: some-role
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: common-test
+            role: some-role

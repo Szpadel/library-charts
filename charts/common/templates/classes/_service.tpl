@@ -93,6 +93,7 @@ spec:
     {{ end }}
   {{- end }}
   {{- end }}
-  selector:
-    {{- include "common.labels.selectorLabels" . | nindent 4 }}
+  {{- with (merge ($values.selectorLabels | default dict) (include "common.labels.selectorLabels" $ | fromYaml)) }}
+  selector: {{- toYaml . | nindent 4 }}
+  {{- end }}
 {{- end }}

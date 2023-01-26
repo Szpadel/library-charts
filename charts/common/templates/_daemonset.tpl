@@ -17,8 +17,9 @@ metadata:
 spec:
   revisionHistoryLimit: {{ .Values.controller.revisionHistoryLimit }}
   selector:
-    matchLabels:
-      {{- include "common.labels.selectorLabels" . | nindent 6 }}
+    {{- with (merge (.Values.controller.selectorLabels | default dict) (include "common.labels.selectorLabels" . | fromYaml)) }}
+    matchLabels: {{- toYaml . | nindent 6 }}
+    {{- end }}
   template:
     metadata:
       {{- with include ("common.podAnnotations") . }}
@@ -26,7 +27,9 @@ spec:
         {{- . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "common.labels.selectorLabels" . | nindent 8 }}
+        {{- with (merge (.Values.controller.selectorLabels | default dict) (include "common.labels.selectorLabels" . | fromYaml)) }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
