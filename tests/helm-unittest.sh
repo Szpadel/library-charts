@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
-DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")../"
 if ! [ -e ~/.local/share/helm/plugins/helm-unittest ];then
     # it might be broken symlint therefore we try to remove it anyways
     rm -f ~/.local/share/helm/plugins/helm-unittest

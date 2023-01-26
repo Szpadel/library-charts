@@ -6,7 +6,7 @@
     "yaml.schemas": {
         "https://raw.githubusercontent.com/quintush/helm-unittest/master/schema/helm-testsuite.json": [
             "charts/*/tests/*_test.yaml",
-            "testing-charts/*/tests/*/*_test.yaml",
+            "testing-charts/*/tests/*/*_test.yaml"
         ]
     },
     "cSpell.words": [
@@ -28,7 +28,12 @@
     "triggerTaskOnSave.tasks": {
         "Helm unittest": [
             "charts/*/templates/**",
-            "testing-charts/*/tests/*/*_test.yaml",
+            "testing-charts/*/tests/*/*_test.yaml"
+        ],
+        "pre-commit": [
+            "**/*.yaml",
+            "**/*.json",
+            "**/*.sh"
         ]
     },
     "triggerTaskOnSave.restart": true,
