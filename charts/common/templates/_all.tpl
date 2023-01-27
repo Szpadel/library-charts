@@ -36,11 +36,11 @@ Main entrypoint for the common library chart. It will render all underlying temp
 
   {{- if .Values.controller.enabled }}
     {{- if eq .Values.controller.type "deployment" }}
-      {{- include "common.deployment" . | nindent 0 }}
+      {{- include "common.classes.deployment" . | nindent 0 }}
     {{ else if eq .Values.controller.type "daemonset" }}
-      {{- include "common.daemonset" . | nindent 0 }}
+      {{- include "common.classes.daemonset" . | nindent 0 }}
     {{ else if eq .Values.controller.type "statefulset"  }}
-      {{- include "common.statefulset" . | nindent 0 }}
+      {{- include "common.classes.statefulset" . | nindent 0 }}
     {{ else }}
       {{- fail (printf "Not a valid controller.type (%s)" .Values.controller.type) }}
     {{- end -}}

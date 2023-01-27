@@ -38,5 +38,6 @@
         ]
     },
     "triggerTaskOnSave.restart": true,
-    "triggerTaskOnSave.showStatusBarToggle": true
+    "triggerTaskOnSave.showStatusBarToggle": true,
+    "editor.indentSize": 2
 }
