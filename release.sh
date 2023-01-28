@@ -27,9 +27,9 @@ run() {
   if [ "$BUMP_MINOR" = "1" ] || [ "$BUMP_PATCH" = "1" ];then
     bump_version "charts/$chart"
   fi
-  helm3 package "charts/$chart" -d releases/
+  helm package "charts/$chart" -d releases/
 
-  helm3 repo index --merge index.yaml --url "$URL" .
+  helm repo index --merge index.yaml --url "$URL" .
 }
 
 
