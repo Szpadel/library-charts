@@ -39,7 +39,8 @@
           "**/Chart.yaml"
         ],
         "executionMode": "branch"
-      }
+      },
+      "groupName": "helm-patch"
     },
     {
       "matchManagers": [
@@ -54,7 +55,8 @@
         "fileFilters": [
           "**/Chart.yaml"
         ],
-        "executionMode": "branch"
+        "executionMode": "branch",
+        "groupName": "helm-minor"
       }
     }
   ]
