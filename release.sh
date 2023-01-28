@@ -24,6 +24,10 @@ bump_version() {
 run() {
   local chart=$1
 
+  if [ "$ALPINE_INSTALL" = "1" ];then
+    alpine_install_deps
+  fi
+
   if [ "$BUMP_MINOR" = "1" ] || [ "$BUMP_PATCH" = "1" ];then
     bump_version "charts/$chart"
   fi
@@ -32,6 +36,9 @@ run() {
   helm repo index --merge index.yaml --url "$URL" .
 }
 
+alpine_install_deps() {
+  apk add --no-cache helm gawk sed
+}
 
 
 BUMP_MINOR=0
@@ -45,6 +52,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --bump-patch)
       BUMP_PATCH=1
+      shift
+      ;;
+    --alpine-install-deps)
+      ALPINE_INSTALL=1
       shift
       ;;
     -*|--*)
