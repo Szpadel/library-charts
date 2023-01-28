@@ -33,7 +33,8 @@
       "matchUpdateTypes": ["pinDigest", "pin", "patch", "digest"],
       "postUpgradeTasks": {
         "commands": [
-          "docker run --rm -w \"$PWD\" -v\"$PWD:$PWD\" alpine sh -c 'apk add --no-cache bash && ./release.sh --alpine-install-deps --bump-patch \"$(basename '{{parentDir}}')\"'"
+          "docker run --rm -w \"$PWD\" -v\"$PWD:$PWD\" alpine sh -c 'apk add --no-cache bash && ./release.sh --alpine-install-deps --bump-patch \"$(basename '{{parentDir}}')\"'",
+          "git add index.yaml releases"
         ],
         "fileFilters": [
           "**/Chart.yaml"
@@ -50,7 +51,8 @@
       "matchUpdateTypes": ["minor"],
       "postUpgradeTasks": {
         "commands": [
-          "docker run --rm -w \"$PWD\" -v\"$PWD:$PWD\" alpine sh -c 'apk add --no-cache bash && ./release.sh --alpine-install-deps --bump-minor \"$(basename '{{parentDir}}')\"'"
+          "docker run --rm -w \"$PWD\" -v\"$PWD:$PWD\" alpine sh -c 'apk add --no-cache bash && ./release.sh --alpine-install-deps --bump-minor \"$(basename '{{parentDir}}')\"'",
+          "git add index.yaml releases"
         ],
         "fileFilters": [
           "**/Chart.yaml"

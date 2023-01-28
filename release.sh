@@ -41,6 +41,7 @@ alpine_install_deps() {
 }
 
 
+ALPINE_INSTALL=0
 BUMP_MINOR=0
 BUMP_PATCH=0
 POSITIONAL_ARGS=()
