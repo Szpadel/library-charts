@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+cd "$DIR"
 
 URL=https://szpadel.github.io/liblary-charts/
 
@@ -34,6 +36,9 @@ run() {
   helm package "charts/$chart" -d releases/
 
   helm repo index --merge index.yaml --url "$URL" .
+  if [ -n "$CHOWN" ];then
+    chown -R "$CHOWN" releases index.yaml
+  fi
 }
 
 alpine_install_deps() {
@@ -45,6 +50,7 @@ ALPINE_INSTALL=0
 BUMP_MINOR=0
 BUMP_PATCH=0
 POSITIONAL_ARGS=()
+CHOWN=
 while [[ $# -gt 0 ]]; do
   case $1 in
     --bump-minor)
@@ -57,6 +63,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     --alpine-install-deps)
       ALPINE_INSTALL=1
+      shift
+      ;;
+    --chown)
+      CHOWN=$2
+      shift
       shift
       ;;
     -*|--*)
