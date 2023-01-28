@@ -22,5 +22,39 @@
     "dependencyDashboardApproval": true
   },
   "prCreation": "not-pending",
-  "rebaseWhen":"behind-base-branch"
+  "rebaseWhen":"behind-base-branch",
+  "packageRules": [
+    {
+      "matchManagers": [
+        "helm-requirements",
+        "helm-values"
+      ],
+      "matchUpdateTypes": ["pinDigest", "pin", "patch", "digest"],
+      "postUpgradeTasks": {
+        "commands": [
+          "./release.sh --bump-patch \"$(basename '{{parentDir}}')\""
+        ],
+        "fileFilters": [
+          "**/Chart.yaml"
+        ],
+        "executionMode": "branch"
+      }
+    },
+    {
+      "matchManagers": [
+        "helm-requirements",
+        "helm-values"
+      ],
+      "matchUpdateTypes": ["minor"],
+      "postUpgradeTasks": {
+        "commands": [
+          "./release.sh --bump-minor \"$(basename '{{parentDir}}')\""
+        ],
+        "fileFilters": [
+          "**/Chart.yaml"
+        ],
+        "executionMode": "branch"
+      }
+    }
+  ]
 }

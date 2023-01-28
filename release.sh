@@ -1,11 +1,66 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ $# != 1 ];then
+URL=https://szpadel.github.io/liblary-charts/
+
+bump_version() {
+  local path=$1
+  local version major minor patch
+  version=$(grep '^version:' "$path/Chart.yaml" | awk '{print $2}')
+  major=$(echo $version | cut -d. -f1)
+  minor=$(echo $version | cut -d. -f2)
+  patch=$(echo $version | cut -d. -f3)
+  if [ "$BUMP_PATCH" = "1" ];then
+    patch=$(expr $patch + 1)
+  fi
+  if [ "$BUMP_MINOR" = "1" ];then
+    patch=0
+    minor=$(expr $minor + 1)
+  fi
+  echo "Replacing $version with $major.$minor.$patch"
+  sed -i "s/^version:.*/version: ${major}.${minor}.${patch}/g" "$path/Chart.yaml"
+}
+
+run() {
+  local chart=$1
+
+  if [ "$BUMP_MINOR" = "1" ] || [ "$BUMP_PATCH" = "1" ];then
+    bump_version "charts/$chart"
+  fi
+  helm3 package "charts/$chart" -d releases/
+
+  helm3 repo index --merge index.yaml --url "$URL" .
+}
+
+
+
+BUMP_MINOR=0
+BUMP_PATCH=0
+POSITIONAL_ARGS=()
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --bump-minor)
+      BUMP_MINOR=1
+      shift
+      ;;
+    --bump-patch)
+      BUMP_PATCH=1
+      shift
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+if [ "${#POSITIONAL_ARGS[@]}" != 1 ];then
   echo "Usage: $0 <chart name>"
   exit 1
 fi
 
-helm3 package charts/$1 -d releases/
-
-helm3 repo index --merge index.yaml --url https://szpadel.github.io/liblary-charts/ .
+run "${POSITIONAL_ARGS[@]}"
