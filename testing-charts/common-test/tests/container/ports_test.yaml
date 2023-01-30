@@ -93,3 +93,44 @@ tests:
             containerPort: null
             name: http
             protocol: UDP
+
+  - it: ports should match only when .selectorLabels are equal
+    set:
+      controller:
+        selectorLabels:
+          role: other
+      service:
+        main:
+          ports:
+            http:
+              protocol: UDP
+    asserts:
+      - documentIndex: 0
+        isKind:
+          of: Deployment
+      - documentIndex: 0
+        equal:
+          path: spec.template.spec.containers[0].ports
+          value: []
+
+  - it: ports should match only when service selectors are contained in controller
+    set:
+      controller:
+        selectorLabels:
+          extra: label
+      service:
+        main:
+          ports:
+            http:
+              protocol: UDP
+    asserts:
+      - documentIndex: 0
+        isKind:
+          of: Deployment
+      - documentIndex: 0
+        equal:
+          path: spec.template.spec.containers[0].ports[0]
+          value:
+            containerPort: null
+            name: http
+            protocol: UDP

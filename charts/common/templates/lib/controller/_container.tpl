@@ -1,22 +1,40 @@
 {{- /* The main container included in the controller */ -}}
 {{- define "common.controller.mainContainer" -}}
-- name: {{ include "common.names.fullname" . }}
-  image: {{ printf "%s:%s" .Values.image.repository (default .Chart.AppVersion .Values.image.tag) | quote }}
-  imagePullPolicy: {{ .Values.image.pullPolicy }}
-  {{- with .Values.command }}
+  {{- $fullName := include "common.names.fullname" . -}}
+  {{- $containerName := $fullName -}}
+  {{- $values := .Values.controller -}}
+
+  {{- if hasKey . "ObjectValues" -}}
+    {{- with .ObjectValues.controller -}}
+      {{- $values = . -}}
+    {{- end -}}
+  {{ end -}}
+
+  {{- if and (hasKey $values "nameOverride") $values.nameOverride -}}
+    {{- $containerName = printf "%v-%v" $containerName $values.nameOverride -}}
+  {{- end -}}
+
+
+  {{- $repository := default .Values.image.repository $values.image.repository -}}
+  {{- $tag := default .Values.image.tag $values.image.tag -}}
+  {{- $pullPolicy := default .Values.image.pullPolicy $values.image.pullPolicy -}}
+- name: {{ $containerName }}
+  image: {{ printf "%s:%s" $repository (default .Chart.AppVersion $tag) | quote }}
+  imagePullPolicy: {{ $pullPolicy }}
+  {{- with $values.command }}
   command:
     {{- if kindIs "string" . }}
-    - {{ . }}
+    - {{ tpl . $ }}
     {{- else }}
-      {{ toYaml . | nindent 4 }}
+      {{ tpl (toYaml .) $ | nindent 4 }}
     {{- end }}
   {{- end }}
-  {{- with .Values.args }}
+  {{- with $values.args }}
   args:
     {{- if kindIs "string" . }}
-    - {{ . }}
+    - {{ tpl . $ }}
     {{- else }}
-    {{ toYaml . | nindent 4 }}
+    {{ (tpl (toYaml .) $) | nindent 4 }}
     {{- end }}
   {{- end }}
   {{- with .Values.securityContext }}
@@ -34,22 +52,24 @@
   terminationMessagePolicy: {{ . }}
   {{- end }}
 
-  {{- with .Values.env }}
+  {{- with (merge .Values.env (default dict $values.env)) }}
   env:
     {{- get (fromYaml (include "common.controller.env_vars" $)) "env" | toYaml | nindent 4 -}}
   {{- end }}
-  {{- if or .Values.envFrom .Values.secret }}
+  {{- $envFrom := concat .Values.envFrom (default list $values.envFrom) -}}
+  {{- $secret := merge .Values.secret (default dict $values.secret) -}}
+  {{- if or $envFrom $secret }}
   envFrom:
-    {{- with .Values.envFrom }}
+    {{- with $envFrom }}
       {{- toYaml . | nindent 4 }}
     {{- end }}
-    {{- if .Values.secret }}
+    {{- if $secret }}
     - secretRef:
         name: {{ include "common.names.fullname" . }}
     {{- end }}
   {{- end }}
   ports:
-  {{- include "common.controller.ports" . | trim | nindent 4 }}
+  {{- include "common.controller.ports" . | trim | default "[]" | nindent 4 }}
   {{- with (include "common.controller.volumeMounts" . | trim) }}
   volumeMounts:
     {{- nindent 4 . }}

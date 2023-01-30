@@ -48,6 +48,20 @@ controller:
   # -- Set statefulset podManagementPolicy, valid values are Parallel and OrderedReady (default).
   podManagementPolicy:
 
+  # -- Override the command(s) for the default container, helm template enabled
+  command: []
+  # -- Override the args for the default container, helm template enabled
+  args: []
+
+  image:
+    # -- image repository
+    repository: ~
+    # -- image tag
+    tag: ~
+    # -- image pull policy
+    pullPolicy: ~
+
+# -- Default definition
 image:
   # -- image repository
   repository:
@@ -56,13 +70,12 @@ image:
   # -- image pull policy
   pullPolicy:
 
+# -- Configure any additional controllers you want to have
+# use the same configuration options as in .controller
+additionalControllers: {}
+
 # -- Set image pull secrets
 imagePullSecrets: []
-
-# -- Override the command(s) for the default container
-command: []
-# -- Override the args for the default container
-args: []
 
 # -- Set annotations on the pod
 podAnnotations: {}
@@ -129,11 +142,7 @@ configmap:
 #          name: secret-name
 #          key: key-name
 #      ...
-# E) - name: TZ
-#      value: UTC
-# F) - name: TZ
-#      value: '{{ .Release.Name }}'
-env:
+env: {}
 
 # -- Secrets and/or ConfigMaps that will be loaded as environment variables.
 # [[ref]](https://unofficial-kubernetes.readthedocs.io/en/latest/tasks/configure-pod-container/configmap/#use-case-consume-configmap-in-environment-variables)

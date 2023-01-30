@@ -13,7 +13,8 @@ tests:
 
   - it: single string should pass
     set:
-      args: sleep infinity
+      controller:
+        args: sleep infinity
     asserts:
       - documentIndex: 0
         isKind:
@@ -24,11 +25,14 @@ tests:
           value:
             - sleep infinity
 
-  - it: list of strings should pass
+  - it: args as array can include templates
     set:
-      args:
-        - sleep
-        - infinity
+      extraParams:
+        something: infinity
+      controller:
+        args:
+          - sleep
+          - "{{ .Values.extraParams.something }}"
     asserts:
       - documentIndex: 0
         isKind:
@@ -39,3 +43,19 @@ tests:
           value:
             - sleep
             - infinity
+
+  - it: args as string can include templates
+    set:
+      extraParams:
+        something: infinity
+      controller:
+        args: "sleep {{ .Values.extraParams.something }}"
+    asserts:
+      - documentIndex: 0
+        isKind:
+          of: Deployment
+      - documentIndex: 0
+        equal:
+          path: spec.template.spec.containers[0].args
+          value:
+            - sleep infinity

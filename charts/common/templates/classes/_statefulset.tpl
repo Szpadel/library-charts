@@ -29,7 +29,7 @@ metadata:
   {{- end }}
 spec:
   revisionHistoryLimit: {{ $values.revisionHistoryLimit }}
-  replicas: {{ $values.replicas }}
+  replicas: {{ $values.replicas | default 1 }}
   podManagementPolicy: {{ default "OrderedReady" $values.podManagementPolicy }}
   {{- $strategy := default "RollingUpdate" $values.strategy }}
   {{- if and (ne $strategy "OnDelete") (ne $strategy "RollingUpdate") }}

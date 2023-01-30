@@ -29,7 +29,7 @@ metadata:
   {{- end }}
 spec:
   revisionHistoryLimit: {{ $values.revisionHistoryLimit }}
-  replicas: {{ $values.replicas }}
+  replicas: {{ $values.replicas | default 1 }}
   {{- $strategy := default "Recreate" $values.strategy }}
   {{- if and (ne $strategy "Recreate") (ne $strategy "RollingUpdate") }}
     {{- fail (printf "Not a valid strategy type for Deployment (%s)" $strategy) }}

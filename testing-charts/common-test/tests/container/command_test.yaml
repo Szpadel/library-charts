@@ -13,7 +13,8 @@ tests:
 
   - it: single string should pass
     set:
-      command: /bin/sh
+      controller:
+        command: /bin/sh
     asserts:
       - documentIndex: 0
         isKind:
@@ -26,9 +27,10 @@ tests:
 
   - it: list of strings should pass
     set:
-      command:
-        - /bin/sh
-        - -c
+      controller:
+        command:
+          - /bin/sh
+          - -c
     asserts:
       - documentIndex: 0
         isKind:
@@ -39,3 +41,40 @@ tests:
           value:
             - /bin/sh
             - -c
+
+  - it: list of strings should allow templates
+    set:
+      extra:
+        cmd: sleep infinity
+      controller:
+        command:
+          - /bin/sh
+          - -c
+          - "{{ .Values.extra.cmd }}"
+    asserts:
+      - documentIndex: 0
+        isKind:
+          of: Deployment
+      - documentIndex: 0
+        equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - /bin/sh
+            - -c
+            - sleep infinity
+
+  - it: single string should allow templates
+    set:
+      extra:
+        cmd: /bin/sh
+      controller:
+        command: "{{ .Values.extra.cmd }}"
+    asserts:
+      - documentIndex: 0
+        isKind:
+          of: Deployment
+      - documentIndex: 0
+        equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - /bin/sh

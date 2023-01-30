@@ -1,0 +1,33 @@
+suite: container image
+templates:
+  - common.yaml
+tests:
+  - it: should use default image when not set
+    documentIndex: 0
+    set:
+      image:
+        repository: nginx
+        tag: stable
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: nginx:stable
+
+  - it: should use controller image when set
+    documentIndex: 0
+    set:
+      image:
+        repository: nginx
+        tag: stable
+      controller:
+        image:
+          repository: apache
+          tag: latest
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: apache:latest

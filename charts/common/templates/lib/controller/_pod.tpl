@@ -16,7 +16,7 @@ imagePullSecrets:
     {{- toYaml . | nindent 2 }}
   {{- end }}
 serviceAccountName: {{ include "common.names.serviceAccountName" . }}
-automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+automountServiceAccountToken: {{ .Values.automountServiceAccountToken | default false }}
   {{- with .Values.podSecurityContext }}
 securityContext:
     {{- toYaml . | nindent 2 }}
@@ -51,25 +51,23 @@ enableServiceLinks: {{ .Values.enableServiceLinks }}
   {{- with .Values.termination.gracePeriodSeconds }}
 terminationGracePeriodSeconds: {{ . }}
   {{- end }}
-  {{- if .Values.initContainers }}
 initContainers:
-    {{- $initContainers := list }}
-    {{- $definedInitContainers := merge .Values.initContainers ($values.initContainers | default dict) -}}
-    {{- range $index, $key := (keys $definedInitContainers | uniq | sortAlpha) }}
-      {{- $container := get $definedInitContainers $key }}
-      {{- if not $container.name -}}
-        {{- $_ := set $container "name" $key }}
-      {{- end }}
-      {{- if $container.env -}}
-        {{- $_ := set $ "ObjectValues" (dict "env" $container.env) -}}
-        {{- $newEnv := fromYaml (include "common.controller.env_vars" $) -}}
-        {{- $_ := unset $.ObjectValues "env" -}}
-        {{- $_ := set $container "env" $newEnv.env }}
-      {{- end }}
-      {{- $initContainers = append $initContainers $container }}
+  {{- $initContainers := list }}
+  {{- $definedInitContainers := merge .Values.initContainers ($values.initContainers | default dict) -}}
+  {{- range $index, $key := (keys $definedInitContainers | uniq | sortAlpha) }}
+    {{- $container := get $definedInitContainers $key }}
+    {{- if not $container.name -}}
+      {{- $_ := set $container "name" $key }}
     {{- end }}
-    {{- tpl (toYaml $initContainers) $ | nindent 2 }}
+    {{- if $container.env -}}
+      {{- $_ := set $ "ObjectValues" (dict "env" $container.env) -}}
+      {{- $newEnv := fromYaml (include "common.controller.env_vars" $) -}}
+      {{- $_ := unset $.ObjectValues "env" -}}
+      {{- $_ := set $container "env" $newEnv.env }}
+    {{- end }}
+    {{- $initContainers = append $initContainers $container }}
   {{- end }}
+  {{- tpl (toYaml $initContainers) $ | nindent 2 }}
 containers:
   {{- include "common.controller.mainContainer" . | nindent 2 }}
   {{- with (merge .Values.additionalContainers ($values.additionalContainers | default dict)) }}
