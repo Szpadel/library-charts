@@ -2,6 +2,7 @@
     "recommendations": [
         "redhat.vscode-yaml",
         "streetsidesoftware.code-spell-checker",
-        "ms-kubernetes-tools.vscode-kubernetes-tools"
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "mads-hartmann.bash-ide-vscode"
     ]
 }

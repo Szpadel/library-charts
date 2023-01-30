@@ -21,4 +21,4 @@ jobs:
         version: v3.5.4
 
     - name: Run tests
-      run: ./tests/helm-unittest.sh
+      run: ./scripts/test-helm-unittest.sh

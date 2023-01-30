@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../"
 cd "$DIR"
 
 URL=https://szpadel.github.io/liblary-charts/

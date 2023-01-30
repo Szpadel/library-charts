@@ -4,7 +4,21 @@
         {
             "label": "Helm unittest",
             "type": "shell",
-            "command": "${workspaceFolder}/tests/helm-unittest.sh",
+            "command": "${workspaceFolder}/scripts/test-helm-unittest.sh",
+            "group": "test",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "label": "pre-commit",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/test-pre-commit.sh",
             "group": "test",
             "presentation": {
                 "echo": false,
@@ -16,9 +30,9 @@
             }
         },
         {
-            "label": "pre-commit",
+            "label": "test github actions",
             "type": "shell",
-            "command": "${workspaceFolder}/tests/pre-commit.sh",
+            "command": "${workspaceFolder}/scripts/test-github-actions.sh --run-in-docker",
             "group": "test",
             "presentation": {
                 "echo": false,

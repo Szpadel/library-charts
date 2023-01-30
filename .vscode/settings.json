@@ -34,7 +34,8 @@
         "pre-commit": [
             "**/*.yaml",
             "**/*.json",
-            "**/*.sh"
+            "**/*.sh",
+            ".pre-commit-config.yaml"
         ]
     },
     "triggerTaskOnSave.restart": true,
