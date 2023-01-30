@@ -48,6 +48,10 @@ controller:
   # -- Set statefulset podManagementPolicy, valid values are Parallel and OrderedReady (default).
   podManagementPolicy:
 
+# -- Configure any additional controllers you want to have
+# use the same configuration options as in .controller
+s: {}
+
 image:
   # -- image repository
   repository:
