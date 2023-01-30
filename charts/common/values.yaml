@@ -23,6 +23,14 @@ controller:
     role: primary
   # -- Number of desired pods
   replicas: 1
+  # -- Specify any additional containers here as dictionary items. Each additional container should have its own key.
+  # Helm templates can be used.
+  # Merged with .additionalContainers
+  additionalContainers: {}
+  # -- Specify any initContainers here as dictionary items. Each initContainer should have its own key.
+  # The dictionary item key will determine the order. Helm templates can be used.
+  # Merged with .initContainers
+  initContainers: {}
   # -- Set the controller upgrade strategy
   # For Deployments, valid values are Recreate (default) and RollingUpdate.
   # For StatefulSets, valid values are OnDelete and RollingUpdate (default).

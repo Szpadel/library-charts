@@ -2,6 +2,15 @@
 The pod definition included in the controller.
 */ -}}
 {{- define "common.controller.pod" -}}
+  {{- $values := .Values.controller -}}
+
+  {{- if hasKey . "ObjectValues" -}}
+    {{- with .ObjectValues.controller -}}
+      {{- $values = . -}}
+    {{- end -}}
+  {{ end -}}
+
+
   {{- with .Values.imagePullSecrets }}
 imagePullSecrets:
     {{- toYaml . | nindent 2 }}
@@ -45,8 +54,9 @@ terminationGracePeriodSeconds: {{ . }}
   {{- if .Values.initContainers }}
 initContainers:
     {{- $initContainers := list }}
-    {{- range $index, $key := (keys .Values.initContainers | uniq | sortAlpha) }}
-      {{- $container := get $.Values.initContainers $key }}
+    {{- $definedInitContainers := merge .Values.initContainers ($values.initContainers | default dict) -}}
+    {{- range $index, $key := (keys $definedInitContainers | uniq | sortAlpha) }}
+      {{- $container := get $definedInitContainers $key }}
       {{- if not $container.name -}}
         {{- $_ := set $container "name" $key }}
       {{- end }}
@@ -62,7 +72,7 @@ initContainers:
   {{- end }}
 containers:
   {{- include "common.controller.mainContainer" . | nindent 2 }}
-  {{- with .Values.additionalContainers }}
+  {{- with (merge .Values.additionalContainers ($values.additionalContainers | default dict)) }}
     {{- $additionalContainers := list }}
     {{- range $name, $container := . }}
       {{- if not $container.name -}}

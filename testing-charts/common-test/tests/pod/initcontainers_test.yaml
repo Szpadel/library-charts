@@ -3,48 +3,46 @@ templates:
   - common.yaml
 tests:
   - it: with explicit name should pass
+    documentIndex: &controllerDoc 0
     set:
       initContainers:
         init1:
           name: template-test
     asserts:
-      - documentIndex: 0
-        isKind:
+      - isKind:
           of: Deployment
-      - documentIndex: 0
-        equal:
+      - equal:
           path: spec.template.spec.initContainers[0].name
           value: template-test
 
   - it: with implicit name should pass
+    documentIndex: *controllerDoc
     set:
       initContainers:
         init1:
           image: template-test
     asserts:
-      - documentIndex: 0
-        isKind:
+      - isKind:
           of: Deployment
-      - documentIndex: 0
-        equal:
+      - equal:
           path: spec.template.spec.initContainers[0].name
           value: init1
 
   - it: with templated name should pass
+    documentIndex: *controllerDoc
     set:
       initContainers:
         init1:
           name: "{{ .Release.Name }}-container"
     asserts:
-      - documentIndex: 0
-        isKind:
+      - isKind:
           of: Deployment
-      - documentIndex: 0
-        equal:
+      - equal:
           path: spec.template.spec.initContainers[0].name
           value: RELEASE-NAME-container
 
   - it: with custom env vars dict should pass
+    documentIndex: *controllerDoc
     set:
       initContainers:
         init1:
@@ -54,30 +52,54 @@ tests:
             string: value_of_env
             template: "{{ .Release.Name }}-admin"
     asserts:
-      - documentIndex: &DeploymentDocument 0
-        isKind:
+      - isKind:
           of: Deployment
-      - documentIndex: *DeploymentDocument
-        equal:
+      - equal:
           path: spec.template.spec.initContainers[0].env[0]
           value:
             name: float
             value: "1.5"
-      - documentIndex: *DeploymentDocument
-        equal:
+      - equal:
           path: spec.template.spec.initContainers[0].env[1]
           value:
             name: int
             value: "1"
-      - documentIndex: *DeploymentDocument
-        equal:
+      - equal:
           path: spec.template.spec.initContainers[0].env[2]
           value:
             name: string
             value: value_of_env
-      - documentIndex: *DeploymentDocument
-        equal:
+      - equal:
           path: spec.template.spec.initContainers[0].env[3]
           value:
             name: template
             value: RELEASE-NAME-admin
+
+  - it: should include initContainers
+    documentIndex: *controllerDoc
+    set:
+      controller:
+        initContainers:
+          from_controller:
+            image: nginx
+      initContainers:
+        from_global:
+          image: nginx
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.initContainers
+          any: true
+          content:
+            image: nginx
+            name: from_global
+      - contains:
+          path: spec.template.spec.initContainers
+          any: true
+          content:
+            image: nginx
+            name: from_controller
+      - lengthEqual:
+          path: spec.template.spec.initContainers
+          count: 2
