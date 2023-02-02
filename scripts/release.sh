@@ -3,7 +3,7 @@ set -euo pipefail
 DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../"
 cd "$DIR"
 
-URL=https://szpadel.github.io/liblary-charts/
+URL=https://szpadel.github.io/library-charts/
 
 bump_version() {
   local path=$1

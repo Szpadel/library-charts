@@ -15,7 +15,7 @@ entries:
     name: common
     type: library
     urls:
-    - https://szpadel.github.io/liblary-charts/releases/common-1.1.1.tgz
+    - https://szpadel.github.io/library-charts/releases/common-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v2
     created: "2023-02-01T10:52:18.803886357Z"
@@ -31,7 +31,7 @@ entries:
     name: common
     type: library
     urls:
-    - https://szpadel.github.io/liblary-charts/releases/common-1.1.0.tgz
+    - https://szpadel.github.io/library-charts/releases/common-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v2
     created: "2023-02-01T10:52:18.80144369Z"
@@ -47,6 +47,6 @@ entries:
     name: common
     type: library
     urls:
-    - https://szpadel.github.io/liblary-charts/releases/common-1.0.0.tgz
+    - https://szpadel.github.io/library-charts/releases/common-1.0.0.tgz
     version: 1.0.0
 generated: "2023-02-01T10:52:18.798086333Z"
