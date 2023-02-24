@@ -15,6 +15,6 @@ entries:
     name: common
     type: library
     urls:
-    - https://szpadel.github.io/liblary-charts/releases/common-0.2.0.tgz
+    - https://szpadel.github.io/library-charts/releases/common-0.2.0.tgz
     version: 0.2.0
 generated: "2023-02-24T14:35:50.867763481Z"
