@@ -22,7 +22,7 @@
             "group": "test",
             "presentation": {
                 "echo": false,
-                "reveal": "always",
+                "reveal": "silent",
                 "focus": false,
                 "panel": "shared",
                 "showReuseMessage": false,
@@ -36,7 +36,7 @@
             "group": "test",
             "presentation": {
                 "echo": false,
-                "reveal": "silent",
+                "reveal": "always",
                 "focus": false,
                 "panel": "shared",
                 "showReuseMessage": false,

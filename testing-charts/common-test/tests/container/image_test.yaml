@@ -3,7 +3,7 @@ templates:
   - common.yaml
 tests:
   - it: should use default image when not set
-    documentIndex: 0
+    documentIndex: &document 0
     set:
       image:
         repository: nginx
@@ -16,7 +16,7 @@ tests:
           value: nginx:stable
 
   - it: should use controller image when set
-    documentIndex: 0
+    documentIndex: *document
     set:
       image:
         repository: nginx
@@ -31,3 +31,92 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].image
           value: apache:latest
+
+  - it: should use IfNotPresent image if not specified
+    documentIndex: *document
+    set:
+      image:
+        repository: nginx
+        tag: stable
+      controller:
+        image:
+          repository: apache
+          tag: latest
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: additional controller should use IfNotPresent image if not specified
+    documentIndex: &extraDocument 0
+    set:
+      image:
+        repository: nginx
+        tag: stable
+      controller:
+        enabled: false
+      additionalControllers:
+        extra:
+          enabled: true
+          type: deployment
+          image:
+            repository: apache
+            tag: latest
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-common-test-extra
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: additional controller should default to global image if missing
+    documentIndex: *extraDocument
+    set:
+      image:
+        repository: nginx
+        tag: stable
+      controller:
+        enabled: false
+      additionalControllers:
+        extra:
+          enabled: true
+          type: deployment
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-common-test-extra
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: nginx:stable
+
+  - it: should inherit image when requested
+    documentIndex: *extraDocument
+    set:
+      controller:
+        image:
+          repository: nginx
+          tag: stable
+        initContainers:
+          extra:
+            enabled: true
+            type: deployment
+            image: inherit
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.initContainers[0].imagePullPolicy
+          value: IfNotPresent
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: nginx:stable

@@ -18,25 +18,28 @@ Environment variables used by containers.
         {{- $name = required "environment variables as a list of maps require a name field" $value.name -}}
       {{- end -}}
 
-      {{- if kindIs "map" $value -}}
-        {{- if hasKey $value "value" -}}
-          {{- $envValue := $value.value | toString -}}
-          {{- $result = append $result (dict "name" $name "value" (tpl $envValue $)) -}}
-        {{- else if hasKey $value "valueFrom" -}}
-          {{- $result = append $result (dict "name" $name "valueFrom" $value.valueFrom) -}}
-        {{- else -}}
-          {{- $result = append $result (dict "name" $name "valueFrom" $value) -}}
+      {{- if not (kindIs "invalid" $value) -}}
+        {{- if kindIs "map" $value -}}
+          {{- if hasKey $value "value" -}}
+            {{- $envValue := $value.value | toString -}}
+            {{- $result = append $result (dict "name" $name "value" (tpl $envValue $)) -}}
+          {{- else if hasKey $value "valueFrom" -}}
+            {{- $result = append $result (dict "name" $name "valueFrom" (fromYaml (tpl (toYaml $value.valueFrom) $ )) ) -}}
+          {{- else -}}
+            {{- $result = append $result (dict "name" $name "valueFrom" (fromYaml (tpl (toYaml $value) $ ))) -}}
+          {{- end -}}
         {{- end -}}
-      {{- end -}}
-      {{- if not (kindIs "map" $value) -}}
-        {{- if kindIs "string" $value -}}
-          {{- $result = append $result (dict "name" $name "value" (tpl $value $)) -}}
-        {{- else if or (kindIs "float64" $value) (kindIs "bool" $value) -}}
-          {{- $result = append $result (dict "name" $name "value" ($value | toString)) -}}
-        {{- else -}}
-          {{- $result = append $result (dict "name" $name "value" $value) -}}
+        {{- if not (kindIs "map" $value) -}}
+          {{- if kindIs "string" $value -}}
+            {{- $result = append $result (dict "name" $name "value" (tpl $value $)) -}}
+          {{- else if or (kindIs "float64" $value) (kindIs "bool" $value) -}}
+            {{- $result = append $result (dict "name" $name "value" ($value | toString)) -}}
+          {{- else -}}
+            {{- $result = append $result (dict "name" $name "value" $value) -}}
+          {{- end -}}
         {{- end -}}
-      {{- end -}}
+    {{- end -}}
+
     {{- end -}}
     {{- toYaml (dict "env" $result) | nindent 0 -}}
   {{- end -}}

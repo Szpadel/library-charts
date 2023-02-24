@@ -110,6 +110,47 @@ tests:
             name: DYNAMIC_ENV
             value: RELEASE-NAME-admin
 
+  - it: Templated explicit ValueFrom in list should pass
+    set:
+      someVal: spec.nodeName
+      env:
+        DYNAMIC_ENV_FROM_LIST:
+          valueFrom:
+            fieldRef:
+              fieldPath: "{{ .Values.someVal }}"
+    asserts:
+      - documentIndex: &DeploymentDoc 0
+        isKind:
+          of: Deployment
+      - documentIndex: *DeploymentDoc
+        equal:
+          path: spec.template.spec.containers[0].env[0]
+          value:
+            name: DYNAMIC_ENV_FROM_LIST
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+
+  - it: Templated implicit ValueFrom should pass
+    set:
+      someVal: spec.nodeName
+      env:
+        DYNAMIC_ENV:
+          fieldRef:
+            fieldPath: "{{ .Values.someVal }}"
+    asserts:
+      - documentIndex: &DeploymentDoc 0
+        isKind:
+          of: Deployment
+      - documentIndex: *DeploymentDoc
+        equal:
+          path: spec.template.spec.containers[0].env[0]
+          value:
+            name: DYNAMIC_ENV
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+
   - it: Combined KeyValue with Explicit ValueFrom should pass
     set:
       env:
@@ -136,3 +177,65 @@ tests:
           value:
             name: STATIC_ENV
             value: static
+
+  - it: should allow removing and overwriting env included globally
+    documentIndex: *DeploymentDoc
+    set:
+      env:
+        SOME_ENV: asd
+        SOME_OTHER_ENV: foo
+      controller:
+        env:
+          SOME_ENV: ~
+          SOME_OTHER_ENV: bar
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].env
+          value:
+            - name: SOME_OTHER_ENV
+              value: bar
+
+  - it: initContainers should inherit envs when requested
+    documentIndex: *DeploymentDoc
+    set:
+      env:
+        SOME_ENV: foo
+      controller:
+        initContainers:
+          example:
+            enabled: true
+            inheritEnv: true
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.initContainers[0].env
+          value:
+            - name: SOME_ENV
+              value: foo
+
+  - it: additionalContainers should inherit envs when requested
+    documentIndex: *DeploymentDoc
+    set:
+      env:
+        SOME_ENV: foo
+      controller:
+        additionalContainers:
+          example:
+            enabled: true
+            inheritEnv: true
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.containers[1].env
+          value:
+            - name: SOME_ENV
+              value: foo
+      - equal:
+          path: spec.template.spec.containers[0].env
+          value:
+            - name: SOME_ENV
+              value: foo

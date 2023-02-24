@@ -120,3 +120,20 @@ tests:
             name: config
             mountPath: /dev
             subPath: mySubPath
+
+  - it: autoMount should skip mount while keeping volume
+    documentIndex: 1
+    set:
+      persistence:
+        config:
+          enabled: true
+          autoMount: false
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value: null
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: config

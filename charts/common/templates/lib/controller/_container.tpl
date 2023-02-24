@@ -2,25 +2,26 @@
 {{- define "common.controller.mainContainer" -}}
   {{- $fullName := include "common.names.fullname" . -}}
   {{- $containerName := $fullName -}}
-  {{- $values := .Values.controller -}}
+  {{- $values := deepCopy .Values.controller -}}
 
   {{- if hasKey . "ObjectValues" -}}
     {{- with .ObjectValues.controller -}}
       {{- $values = . -}}
     {{- end -}}
-  {{ end -}}
+  {{- end -}}
 
   {{- if and (hasKey $values "nameOverride") $values.nameOverride -}}
     {{- $containerName = printf "%v-%v" $containerName $values.nameOverride -}}
   {{- end -}}
 
 
-  {{- $repository := default .Values.image.repository $values.image.repository -}}
-  {{- $tag := default .Values.image.tag $values.image.tag -}}
-  {{- $pullPolicy := default .Values.image.pullPolicy $values.image.pullPolicy -}}
+  {{- $controllerImage := default dict $values.image -}}
+  {{- $repository := pluck "repository" $controllerImage .Values.image | first -}}
+  {{- $tag := pluck "tag" $controllerImage .Values.image | first -}}
+  {{- $pullPolicy := pluck "pullPolicy" $controllerImage .Values.image | first -}}
 - name: {{ $containerName }}
   image: {{ printf "%s:%s" $repository (default .Chart.AppVersion $tag) | quote }}
-  imagePullPolicy: {{ $pullPolicy }}
+  imagePullPolicy: {{ $pullPolicy | default "IfNotPresent" }}
   {{- with $values.command }}
   command:
     {{- if kindIs "string" . }}
@@ -52,29 +53,20 @@
   terminationMessagePolicy: {{ . }}
   {{- end }}
 
-  {{- with (merge .Values.env (default dict $values.env)) }}
-  env:
-    {{- get (fromYaml (include "common.controller.env_vars" $)) "env" | toYaml | nindent 4 -}}
-  {{- end }}
-  {{- $envFrom := concat .Values.envFrom (default list $values.envFrom) -}}
-  {{- $secret := merge .Values.secret (default dict $values.secret) -}}
-  {{- if or $envFrom $secret }}
-  envFrom:
-    {{- with $envFrom }}
-      {{- toYaml . | nindent 4 }}
-    {{- end }}
-    {{- if $secret }}
-    - secretRef:
-        name: {{ include "common.names.fullname" . }}
-    {{- end }}
-  {{- end }}
+  {{- $_ := set $ "ObjectValues" (dict "controller" $values) -}}
+  {{- include "common.controller.envs" . | nindent 2 -}}
+  {{- $_ := unset $.ObjectValues "controller" }}
   ports:
   {{- include "common.controller.ports" . | trim | default "[]" | nindent 4 }}
+  {{- $_ := set $ "ObjectValues" (dict "controller" $values) -}}
   {{- with (include "common.controller.volumeMounts" . | trim) }}
   volumeMounts:
     {{- nindent 4 . }}
   {{- end }}
+  {{- $_ := unset $.ObjectValues "controller" }}
+  {{- $_ := set $ "ObjectValues" (dict "controller" $values) -}}
   {{- include "common.controller.probes" . | trim | nindent 2 }}
+  {{- $_ := unset $.ObjectValues "controller" }}
   {{- with .Values.resources }}
   resources:
     {{- toYaml . | nindent 4 }}

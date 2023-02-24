@@ -8,7 +8,14 @@ Probes selection logic.
   {{- $primaryPort = get $primaryService.ports (include "common.classes.service.ports.primary" (dict "serviceName" (include "common.service.primary" .) "values" $primaryService)) -}}
 {{- end -}}
 
-{{- range $probeName, $probe := .Values.probes }}
+{{- $values := deepCopy .Values.controller -}}
+{{- if hasKey . "ObjectValues" -}}
+  {{- with .ObjectValues.controller -}}
+    {{- $values = . -}}
+  {{- end -}}
+{{ end -}}
+
+{{- range $probeName, $probe := mergeOverwrite (deepCopy .Values.probes) ($values.probes|default dict) }}
   {{- if $probe.enabled -}}
     {{- "" | nindent 0 }}
     {{- $probeName }}Probe:

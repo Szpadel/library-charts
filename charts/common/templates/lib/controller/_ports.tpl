@@ -3,20 +3,20 @@ Ports included by the controller.
 */}}
 {{- define "common.controller.ports" -}}
   {{- $ports := list -}}
-  {{- $selectorLabels := .Values.controller.selectorLabels -}}
+  {{- $selectorLabels := deepCopy .Values.controller.selectorLabels -}}
   {{- if hasKey . "ObjectValues" -}}
     {{- with .ObjectValues.controller -}}
-      {{- $selectorLabels = .selectorLabels -}}
+      {{- $selectorLabels = deepCopy .selectorLabels -}}
     {{- end -}}
   {{ end -}}
 
-  {{- range .Values.service -}}
+  {{- range deepCopy .Values.service -}}
     {{- $serviceSelectorLabels := default $selectorLabels .selectorLabels -}}
     {{- with (merge $serviceSelectorLabels (include "common.labels.selectorLabels" $ | fromYaml)) }}
-      {{- $serviceSelectorLabels := default $selectorLabels .selectorLabels -}}
+      {{- $serviceSelectorLabels := deepCopy (default $selectorLabels .selectorLabels) -}}
     {{- end -}}
-    {{- $mergedSelectedLabels := merge $serviceSelectorLabels $selectorLabels -}}
-    {{- if and .enabled (deepEqual $selectorLabels $mergedSelectedLabels) -}}
+    {{- $mergedSelectedLabels := merge (deepCopy $serviceSelectorLabels) $selectorLabels -}}
+    {{- if and .enabled (deepEqual (merge (deepCopy $selectorLabels) (include "common.labels.selectorLabels" $ | fromYaml)) $mergedSelectedLabels) -}}
       {{- range $name, $port := .ports -}}
         {{- $_ := set $port "name" $name -}}
         {{- $ports = mustAppend $ports $port -}}

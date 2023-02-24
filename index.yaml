@@ -1,36 +1,3 @@
 apiVersion: v1
 entries:
-  common:
-  - apiVersion: v2
-    created: "2023-01-29T08:30:53.795559355Z"
-    description: Function library for charts
-    digest: ec477be7cf5bf479864433384719b8add7d47d9b51147047c2e966463dd233fa
-    home: https://github.com/Szpadel/library-charts
-    keywords:
-    - common
-    kubeVersion: '>=1.16.0-0'
-    maintainers:
-    - email: piotrekrogowski@gmail.com
-      name: Szpadel
-    name: common
-    type: library
-    urls:
-    - https://szpadel.github.io/liblary-charts/releases/common-1.1.0.tgz
-    version: 1.1.0
-  - apiVersion: v2
-    created: "2023-01-29T08:30:53.793122646Z"
-    description: Function library for charts
-    digest: 91041e523aee9f67a49dbea4cf5e67cc5ce3c9778f32bc86cca7c16321aacae8
-    home: https://github.com/Szpadel/library-charts
-    keywords:
-    - common
-    kubeVersion: '>=1.16.0-0'
-    maintainers:
-    - email: piotrekrogowski@gmail.com
-      name: Szpadel
-    name: common
-    type: library
-    urls:
-    - https://szpadel.github.io/liblary-charts/releases/common-1.0.0.tgz
-    version: 1.0.0
 generated: "2023-01-29T08:30:53.790083039Z"

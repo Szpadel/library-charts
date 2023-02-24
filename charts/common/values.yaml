@@ -7,6 +7,11 @@ global:
   labels: {}
   # -- Set additional global annotations. Helm templates can be used.
   annotations: {}
+  debug:
+    # -- Enabled debug asserts that guard if common chart does not mutate .Values
+    # After applying addons and globals
+    # Failing with this flag enabled means bug in library chart
+    asserts: false
 
 controller:
   # -- enable the controller.
@@ -60,6 +65,14 @@ controller:
     tag: ~
     # -- image pull policy
     pullPolicy: ~
+  # Enable probes only for main controller
+  probes:
+    liveness:
+      enabled: true
+    readiness:
+      enabled: true
+    startup:
+      enabled: true
 
 # -- Default definition
 image:
@@ -86,12 +99,21 @@ podLabels: {}
 # -- Add a Horizontal Pod Autoscaler
 # @default -- <disabled>
 autoscaling:
-  enabled: false
-  target:  # deploymentname
-  minReplicas:  # 1
-  maxReplicas:  # 100
-  targetCPUUtilizationPercentage:  # 80
-  targetMemoryUtilizationPercentage:  # 80
+  main:
+    enabled: false
+    target:  # additionalDeploymentName
+    # alternative syntax
+    # target:
+    #   name: additionalDeploymentName
+    # for custom resources:
+    # target:
+    #   fullName: example-full-name
+    #   kind: Deployment
+    # empty value means main controller
+    minReplicas:  # 1
+    maxReplicas:  # 100
+    targetCPUUtilizationPercentage:  # 80
+    targetMemoryUtilizationPercentage:  # 80
 
 serviceAccount:
   # -- Specifies whether a service account should be created
@@ -191,10 +213,16 @@ lifecycle: {}
 
 # -- Specify any initContainers here as dictionary items. Each initContainer should have its own key.
 # The dictionary item key will determine the order. Helm templates can be used.
+# Special keys:
+# `inheritEnv` - inherits environment variables form parent (controller - if defined inside controller) and global
+# `image` - setting to "inherit" inherits image form parent (controller - if defined inside controller) and global
 initContainers: {}
 
 # -- Specify any additional containers here as dictionary items. Each additional container should have its own key.
 # Helm templates can be used.
+# Special keys:
+# `inheritEnv` - inherits environment variables form parent (controller - if defined inside controller) and global
+# `image` - setting to "inherit" inherits image form parent (controller - if defined inside controller) and global
 additionalContainers: {}
 
 # -- Probe configuration
@@ -205,7 +233,7 @@ probes:
   # @default -- See below
   liveness:
     # -- Enable the liveness probe
-    enabled: true
+    enabled: false
     # -- Set this to `true` if you wish to specify your own livenessProbe
     custom: false
     # -- The spec field contains the values for the default livenessProbe.
@@ -221,7 +249,7 @@ probes:
   # @default -- See below
   readiness:
     # -- Enable the readiness probe
-    enabled: true
+    enabled: false
     # -- Set this to `true` if you wish to specify your own readinessProbe
     custom: false
     # -- The spec field contains the values for the default readinessProbe.
@@ -237,7 +265,7 @@ probes:
   # @default -- See below
   startup:
     # -- Enable the startup probe
-    enabled: true
+    enabled: false
     # -- Set this to `true` if you wish to specify your own startupProbe
     custom: false
     # -- The spec field contains the values for the default startupProbe.
@@ -424,6 +452,12 @@ persistence:
 
     # -- Set to true to retain the PVC upon `helm uninstall`
     retain: false
+
+    # -- Include automatically in volumeMounts, default true
+    # When this is set to false, entry will be included in volumes
+    # but not in volumeMounts
+    # Useful when volume is needed only in initContainers or additionalContainers
+    autoMount: true
 
   # -- Create an emptyDir volume to share between all containers
   # [[ref]]https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)

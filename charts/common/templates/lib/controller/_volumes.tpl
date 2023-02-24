@@ -2,7 +2,15 @@
 Volumes included by the controller.
 */}}
 {{- define "common.controller.volumes" -}}
-{{- range $index, $persistence := .Values.persistence }}
+  {{- $values := .Values.controller -}}
+  {{- if hasKey . "ObjectValues" -}}
+    {{- with .ObjectValues.controller -}}
+      {{- $values = . -}}
+    {{- end -}}
+  {{- end -}}
+
+
+{{- range $index, $persistence := mergeOverwrite (deepCopy .Values.persistence) ($values.persistence | default dict) }}
 {{- if $persistence.enabled }}
 - name: {{ $index }}
   {{- if eq (default "pvc" $persistence.type) "pvc" }}

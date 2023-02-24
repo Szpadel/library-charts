@@ -21,16 +21,16 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ $daemonsetName }}
-  {{- with (merge ($values.labels | default dict) (include "common.labels" $ | fromYaml)) }}
+  {{- with (merge (deepCopy ($values.labels | default dict)) (include "common.labels" $ | fromYaml)) }}
   labels: {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with (merge ($values.annotations | default dict) (include "common.annotations" $ | fromYaml)) }}
+  {{- with (merge (deepCopy ($values.annotations | default dict)) (include "common.annotations" $ | fromYaml)) }}
   annotations: {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   revisionHistoryLimit: {{ $values.revisionHistoryLimit }}
   selector:
-    {{- with (merge ($values.selectorLabels | default dict) (include "common.labels.selectorLabels" . | fromYaml)) }}
+    {{- with (merge (deepCopy ($values.selectorLabels | default dict)) (include "common.labels.selectorLabels" . | fromYaml)) }}
     matchLabels: {{- toYaml . | nindent 6 }}
     {{- end }}
   template:
@@ -40,7 +40,7 @@ spec:
         {{- . | nindent 8 }}
       {{- end }}
       labels:
-        {{- with (merge ($values.selectorLabels | default dict) (include "common.labels.selectorLabels" . | fromYaml)) }}
+        {{- with (merge (deepCopy ($values.selectorLabels | default dict)) (include "common.labels.selectorLabels" . | fromYaml)) }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
         {{- with .Values.podLabels }}

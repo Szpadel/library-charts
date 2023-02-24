@@ -1,7 +1,7 @@
 {{/* Renders the Ingress objects required by the chart */}}
 {{- define "common.ingress" -}}
   {{- /* Generate named ingresses as required */ -}}
-  {{- range $name, $ingress := .Values.ingress }}
+  {{- range $name, $ingress := deepCopy .Values.ingress }}
     {{- if $ingress.enabled -}}
       {{- $ingressValues := $ingress -}}
 

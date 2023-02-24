@@ -1,0 +1,145 @@
+suite: HPA target
+templates:
+  - common.yaml
+tests:
+  - it: default should pass
+    set:
+      autoscaling:
+        main:
+          enabled: true
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            apiVersion: apps/v1
+            kind: Deployment
+            name: RELEASE-NAME-common-test
+
+  - it: works with additional controllers
+    set:
+      controller:
+        enabled: false
+      additionalControllers:
+        extra:
+          enabled: true
+          type: daemonset
+      autoscaling:
+        main:
+          enabled: true
+          target: extra
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            apiVersion: apps/v1
+            kind: DaemonSet
+            name: RELEASE-NAME-common-test-extra
+
+  - it: works with additional controllers map syntax
+    set:
+      controller:
+        enabled: false
+      additionalControllers:
+        extra:
+          enabled: true
+          type: daemonset
+      autoscaling:
+        main:
+          enabled: true
+          target:
+            name: extra
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            apiVersion: apps/v1
+            kind: DaemonSet
+            name: RELEASE-NAME-common-test-extra
+
+  - it: skips hpa when controller is disabled
+    set:
+      controller:
+        enabled: false
+      autoscaling:
+        main:
+          enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - documentIndex: 0
+        isKind:
+          of: Service
+
+  - it: skips hpa when additional controller is disabled
+    set:
+      controller:
+        enabled: false
+
+      additionalControllers:
+        extra:
+          enabled: false
+          type: daemonset
+      autoscaling:
+        main:
+          enabled: true
+          target: extra
+    asserts:
+      - hasDocuments:
+          count: 1
+      - documentIndex: 0
+        isKind:
+          of: Service
+
+  - it: allows setting hpa by full name
+    set:
+      example:
+        name: example
+      autoscaling:
+        main:
+          enabled: true
+          target:
+            fullName: "{{ .Values.example.name }}-full-name"
+            kind: DaemonSet
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            apiVersion: apps/v1
+            kind: DaemonSet
+            name: example-full-name
+
+  - it: respects fullName overwrite for additional controllers
+    set:
+      controller:
+        enabled: false
+      additionalControllers:
+        extra:
+          enabled: true
+          type: daemonset
+          nameOverride: example-overwrite
+      autoscaling:
+        main:
+          enabled: true
+          target: extra
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: spec.scaleTargetRef
+          value:
+            apiVersion: apps/v1
+            kind: DaemonSet
+            name: RELEASE-NAME-common-test-example-overwrite

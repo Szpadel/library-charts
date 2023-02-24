@@ -10,7 +10,7 @@ Renders all controllers required by the chart.
   {{- range $name, $controller := .Values.additionalControllers -}}
     {{- if $controller.enabled -}}
 
-      {{- $controllerValues := $controller -}}
+      {{- $controllerValues := deepCopy $controller -}}
 
       {{/* set the default nameOverride to the controller name */}}
       {{- if not $controllerValues.nameOverride -}}
@@ -19,6 +19,7 @@ Renders all controllers required by the chart.
 
       {{- $_ := set $ "ObjectValues" (dict "controller" $controllerValues) -}}
       {{- include "common.classes.controller" $ -}}
+      {{- $_ := unset $.ObjectValues "controller" -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

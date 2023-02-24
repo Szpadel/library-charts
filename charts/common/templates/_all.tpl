@@ -25,6 +25,10 @@ Main entrypoint for the common library chart. It will render all underlying temp
     {{- include "common.addon.netshoot" . }}
   {{- end -}}
 
+  {{- if .Values.global.debug.asserts -}}
+  {{ $_ := set . "__InitialValues" (deepCopy .Values) }}
+  {{- end -}}
+
   {{ include "common.configmap" . | nindent 0 }}
 
   {{- /* Build the templates */ -}}
@@ -36,7 +40,7 @@ Main entrypoint for the common library chart. It will render all underlying temp
 
   {{ include "common.controller" . | nindent 0 }}
 
-  {{ include "common.classes.hpa" . | nindent 0 }}
+  {{ include "common.hpa" . | nindent 0 }}
 
   {{ include "common.service" . | nindent 0 }}
 
@@ -45,4 +49,9 @@ Main entrypoint for the common library chart. It will render all underlying temp
   {{- if .Values.secret -}}
     {{ include "common.secret" .  | nindent 0 }}
   {{- end -}}
+
+  {{- if .Values.global.debug.asserts -}}
+  {{- include "common.debug.findChange" (dict "org" .__InitialValues "new" .Values) -}}
+  {{- end -}}
+
 {{- end -}}

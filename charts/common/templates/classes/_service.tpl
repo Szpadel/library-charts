@@ -21,14 +21,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ $serviceName }}
-  {{- with (merge ($values.labels | default dict) (include "common.labels" $ | fromYaml)) }}
+  {{- with (merge (deepCopy ($values.labels | default dict)) (include "common.labels" $ | fromYaml)) }}
   labels: {{- toYaml . | nindent 4 }}
   {{- end }}
   annotations:
   {{- if eq ( $primaryPort.protocol | default "" ) "HTTPS" }}
     traefik.ingress.kubernetes.io/service.serversscheme: https
   {{- end }}
-  {{- with (merge ($values.annotations | default dict) (include "common.annotations" $ | fromYaml)) }}
+  {{- with (merge (deepCopy ($values.annotations | default dict)) (include "common.annotations" $ | fromYaml)) }}
     {{ toYaml . | nindent 4 }}
   {{- end }}
 spec:
@@ -93,7 +93,7 @@ spec:
     {{ end }}
   {{- end }}
   {{- end }}
-  {{- with (merge ($values.selectorLabels | default dict) (include "common.labels.selectorLabels" $ | fromYaml)) }}
+  {{- with (merge (deepCopy ($values.selectorLabels | default dict)) (include "common.labels.selectorLabels" $ | fromYaml)) }}
   selector: {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}

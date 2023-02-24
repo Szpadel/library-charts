@@ -1,7 +1,17 @@
 {{/* Volumes included by the controller */}}
 {{- define "common.controller.volumeMounts" -}}
-  {{- range $persistenceIndex, $persistenceItem := .Values.persistence }}
-    {{- if $persistenceItem.enabled -}}
+  {{- $values := .Values.controller -}}
+  {{- if hasKey . "ObjectValues" -}}
+    {{- with .ObjectValues.controller -}}
+      {{- $values = . -}}
+    {{- end -}}
+  {{- end -}}
+
+
+  {{- range $persistenceIndex, $persistenceItem := mergeOverwrite (deepCopy .Values.persistence) ($values.persistence | default dict) }}
+    {{- $autoMountDefined := kindIs "bool" $persistenceItem.autoMount -}}
+    {{- $autoMount := or (not $autoMountDefined) $persistenceItem.autoMount -}}
+    {{- if and $persistenceItem.enabled $autoMount -}}
       {{- if kindIs "slice" $persistenceItem.subPath -}}
         {{- if $persistenceItem.mountPath -}}
           {{- fail (printf "Cannot use persistence.mountPath with a subPath list (%s)" $persistenceIndex) }}

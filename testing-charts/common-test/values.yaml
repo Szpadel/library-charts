@@ -1,3 +1,6 @@
+global:
+  debug:
+    asserts: true
 image:
   repository: b4bz/homer
   tag: latest

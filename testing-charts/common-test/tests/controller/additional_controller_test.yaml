@@ -1,11 +1,41 @@
 suite: additional controller metadata deployment
 templates:
   - common.yaml
+release:
+  name: example
 tests:
   - it: should render additional controller
-    documentIndex: &ControllerDoc 0
+    documentIndex: &ControllerDoc 1
     set:
-      controller.enabled: false
+      additionalControllers:
+        extra:
+          enabled: true
+          type: deployment
+          image:
+            repository: nginx
+            tag: latest
+    asserts:
+      - isKind:
+          of: Deployment
+      - isNull:
+          path: metadata.annotations
+      - equal:
+          path: metadata.labels
+          value:
+            app.kubernetes.io/instance: example
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: common-test
+            helm.sh/chart: common-test-0.1.0
+      - equal:
+          path: metadata.name
+          value: example-common-test-extra
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: nginx:latest
+
+  - it: container should have same name as controller
+    documentIndex: &ControllerDoc 1
+    set:
       additionalControllers:
         extra:
           enabled: true
@@ -15,15 +45,9 @@ tests:
     asserts:
       - isKind:
           of: Deployment
-      - isNull:
-          path: metadata.annotations
-      - equal:
-          path: metadata.labels
-          value:
-            app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Helm
-            app.kubernetes.io/name: common-test
-            helm.sh/chart: common-test-0.1.0
       - equal:
           path: metadata.name
-          value: RELEASE-NAME-common-test-extra
+          value: example-common-test-extra
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: example-common-test-extra
