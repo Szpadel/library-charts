@@ -12,6 +12,6 @@ metadata:
 type: Opaque
 {{- with .Values.secret }}
 stringData:
-  {{- toYaml . | tpl $ | nindent 2 }}
+  {{- tpl (toYaml .) $ | nindent 2 }}
 {{- end }}
 {{- end }}
