@@ -65,5 +65,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      {{- $_ := set . "ObjectValues" (dict "controller" $values) -}}
       {{- include "common.controller.pod" . | nindent 6 }}
+      {{- $_ := unset .ObjectValues "controller" -}}
 {{- end }}

@@ -40,5 +40,7 @@ spec:
       {{- end }}
     spec:
       restartPolicy: {{ $values.restartPolicy | default "OnFailure" }}
+      {{- $_ := set . "ObjectValues" (dict "controller" $values) -}}
       {{- include "common.controller.pod" . | nindent 6 }}
+      {{- $_ := unset .ObjectValues "controller" -}}
 {{- end -}}
