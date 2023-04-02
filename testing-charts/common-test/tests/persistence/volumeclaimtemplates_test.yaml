@@ -6,11 +6,11 @@ tests:
     set:
       controller:
         type: statefulset
-      volumeClaimTemplates:
-        - name: "storage"
-          accessMode: "ReadWriteOnce"
-          size: "10Gi"
-          storageClass: "storage"
+        volumeClaimTemplates:
+          - name: "storage"
+            accessMode: "ReadWriteOnce"
+            size: "10Gi"
+            storageClass: "storage"
     asserts:
       - documentIndex: 0
         isKind:

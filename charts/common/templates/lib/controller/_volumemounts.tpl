@@ -54,8 +54,8 @@
     {{- end -}}
   {{- end }}
 
-  {{- if eq .Values.controller.type "statefulset" }}
-    {{- range $index, $vct := .Values.volumeClaimTemplates }}
+  {{- if eq $values.type "statefulset" }}
+    {{- range $index, $vct := $values.volumeClaimTemplates }}
 - mountPath: {{ $vct.mountPath }}
   name: {{ $vct.name }}
       {{- if $vct.subPath }}

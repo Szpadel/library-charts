@@ -62,9 +62,9 @@ spec:
     spec:
       {{- $_ := set . "ObjectValues" (dict "controller" $values) -}}
       {{- include "common.controller.pod" . | nindent 6 }}
-      {{- $_ := unset .ObjectValues "controller" -}}
+      {{- $_ := unset .ObjectValues "controller" }}
   volumeClaimTemplates:
-    {{- range $index, $vct := .Values.volumeClaimTemplates }}
+    {{- range $index, $vct := $values.volumeClaimTemplates }}
     - metadata:
         name: {{ $vct.name }}
       spec:
