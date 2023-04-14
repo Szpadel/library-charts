@@ -11,7 +11,7 @@ Volumes included by the controller.
 
 
 {{- $persistence := mergeOverwrite (deepCopy .Values.persistence) ($values.persistence | default dict) }}
-{{- if eq $values._inherit false -}}
+{{- if eq (default dict $values.persistence)._inherit false -}}
   {{- $persistence = deepCopy (default dict $values.persistence) -}}
 {{- end -}}
 {{- $_ := unset $persistence "_inherit" -}}

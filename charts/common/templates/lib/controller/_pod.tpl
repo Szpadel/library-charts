@@ -58,7 +58,7 @@ terminationGracePeriodSeconds: {{ . }}
 initContainers:
   {{- $initContainers := list }}
   {{- $definedInitContainers := mergeOverwrite (deepCopy .Values.initContainers) ($values.initContainers | default dict) -}}
-  {{- if eq $values._inherit false -}}
+  {{- if eq (default dict $values.initContainers)._inherit false -}}
     {{- $definedInitContainers = deepCopy (default dict $values.initContainers) -}}
   {{- end -}}
   {{- $_ := unset $definedInitContainers "_inherit" -}}

@@ -51,3 +51,30 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].name
           value: example-common-test-extra
+
+  - it: should disable inheritance when requested
+    documentIndex: *ControllerDoc
+    set:
+      initContainers:
+        test:
+          enabled: true
+          image: nginx:latest
+          inheritEnv: true
+      additionalControllers:
+        extra:
+          enabled: true
+          type: deployment
+          image:
+            repository: nginx
+            tag: latest
+          initContainers:
+            _inherit: false
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: example-common-test-extra
+      - equal:
+          path: spec.template.spec.initContainers
+          value: []
