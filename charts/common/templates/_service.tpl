@@ -3,7 +3,7 @@ Renders the Service objects required by the chart.
 */}}
 {{- define "common.service" -}}
   {{- /* Generate named services as required */ -}}
-  {{- range $name, $service := .Values.service }}
+  {{- range $name, $service := deepCopy .Values.service }}
     {{- if $service.enabled -}}
       {{- $serviceValues := $service -}}
 
