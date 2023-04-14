@@ -7,8 +7,12 @@
     {{- end -}}
   {{- end -}}
 
-
-  {{- range $persistenceIndex, $persistenceItem := mergeOverwrite (deepCopy .Values.persistence) ($values.persistence | default dict) }}
+  {{- $persistence := mergeOverwrite (deepCopy .Values.persistence) ($values.persistence | default dict) }}
+  {{- if eq $values._inherit false -}}
+    {{- $persistence = deepCopy (default dict $values.persistence) -}}
+  {{- end -}}
+  {{- $_ := unset $persistence "_inherit" -}}
+  {{- range $persistenceIndex, $persistenceItem := $persistence }}
     {{- $autoMountDefined := kindIs "bool" $persistenceItem.autoMount -}}
     {{- $autoMount := or (not $autoMountDefined) $persistenceItem.autoMount -}}
     {{- if and $persistenceItem.enabled $autoMount -}}

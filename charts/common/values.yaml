@@ -37,6 +37,8 @@ controller:
   # The dictionary item key will determine the order. Helm templates can be used.
   # Merged with .initContainers
   initContainers: {}
+  ## Disable inheritance
+  #  _inherit: false
   # -- Set the controller upgrade strategy
   # For Deployments, valid values are Recreate (default) and RollingUpdate.
   # For StatefulSets, valid values are OnDelete and RollingUpdate (default).
@@ -74,6 +76,9 @@ controller:
       enabled: true
     startup:
       enabled: true
+  # persistence:
+  ## This will disable merging with global persistence
+  #   _inherit: false
 
 
   # -- Used in conjunction with `controller.type: statefulset` to create individual disks for each instance.

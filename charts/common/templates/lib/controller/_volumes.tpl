@@ -10,7 +10,12 @@ Volumes included by the controller.
   {{- end -}}
 
 
-{{- range $index, $persistence := mergeOverwrite (deepCopy .Values.persistence) ($values.persistence | default dict) }}
+{{- $persistence := mergeOverwrite (deepCopy .Values.persistence) ($values.persistence | default dict) }}
+{{- if eq $values._inherit false -}}
+  {{- $persistence = deepCopy (default dict $values.persistence) -}}
+{{- end -}}
+{{- $_ := unset $persistence "_inherit" -}}
+{{- range $index, $persistence := $persistence }}
 {{- if $persistence.enabled }}
 - name: {{ $index }}
   {{- if eq (default "pvc" $persistence.type) "pvc" }}
