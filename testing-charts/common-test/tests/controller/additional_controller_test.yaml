@@ -17,7 +17,7 @@ tests:
     asserts:
       - isKind:
           of: Deployment
-      - isNull:
+      - notExists:
           path: metadata.annotations
       - equal:
           path: metadata.labels

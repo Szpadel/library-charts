@@ -50,8 +50,9 @@ tests:
           path: spec.ports[0].protocol
           value: TCP
       - documentIndex: *ServiceDocument
-        isNull:
+        equal:
           path: metadata.annotations
+          value: null
 
   - it: explicit HTTPS should pass
     set:

@@ -45,6 +45,7 @@ tests:
         enabled: true
         hosts:
           - host: "{{ .Release.Name }}.hostname"
+            paths: []
     asserts:
       - documentIndex: &IngressDocument 2
         isKind:

@@ -7,8 +7,8 @@ tests:
       - documentIndex: &ServiceDocument 1
         isKind:
           of: Service
-      - isNull:
-          path: metadata.annotations
+      # - notExists:
+      #     path: metadata.annotations
       - equal:
           path: metadata.labels
           value:

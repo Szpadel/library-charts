@@ -101,6 +101,7 @@ tests:
             name: config
             mountPath: /data
 
+
   - it: hostPath mount with subPath should pass
     set:
       persistence:
@@ -131,7 +132,7 @@ tests:
     asserts:
       - isKind:
           of: Deployment
-      - equal:
+      - notExists:
           path: spec.template.spec.containers[0].volumeMounts
           value: null
       - equal:
