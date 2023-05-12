@@ -4,7 +4,7 @@ OWN="$(realpath "${BASH_SOURCE[0]}")"
 DIR="$(dirname "$OWN")"
 ROOT="$DIR/../"
 
-DOCKER_SOCKET="${DOCKER_SOCKER:-/run/docker.sock}"
+DOCKER_SOCKET="${DOCKER_SOCKET:-/run/docker.sock}"
 
 help() {
   echo "--run-in-docker         Reexec itself inside docker"

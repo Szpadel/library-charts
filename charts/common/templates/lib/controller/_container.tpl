@@ -57,8 +57,8 @@
   {{- include "common.controller.envs" . | nindent 2 -}}
   {{- $_ := unset $.ObjectValues "controller" }}
   ports:
-  {{- include "common.controller.ports" . | trim | default "[]" | nindent 4 }}
   {{- $_ := set $ "ObjectValues" (dict "controller" $values) -}}
+  {{- include "common.controller.ports" . | trim | default "[]" | nindent 4 }}
   {{- with (include "common.controller.volumeMounts" . | trim) }}
   volumeMounts:
     {{- nindent 4 . }}

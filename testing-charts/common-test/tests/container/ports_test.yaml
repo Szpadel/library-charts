@@ -113,6 +113,59 @@ tests:
           path: spec.template.spec.containers[0].ports
           value: []
 
+  - it: ports should be only added to controller that matches
+    set:
+      controller:
+        selectorLabels:
+          role: primary
+      additionalControllers:
+        extra:
+          type: deployment
+          enabled: true
+          selectorLabels:
+            role: extra
+      service:
+        main:
+          ports:
+            http:
+              enabled: true
+              protocol: UDP
+              targetPort: 80
+        extra:
+          selectorLabels:
+            role: extra
+          enabled: true
+          ports:
+            extra:
+              enabled: true
+              protocol: TCP
+              targetPort: 1234
+    asserts:
+      - documentIndex: 0
+        isKind:
+          of: Deployment
+      - documentIndex: 0
+        equal:
+          path: spec.template.spec.containers[0].ports
+          value:
+          - containerPort: 80
+            name: http
+            protocol: UDP
+      - documentIndex: 1
+        isKind:
+          of: Deployment
+      - documentIndex: 1
+        equal:
+          path: metadata.name
+          value: RELEASE-NAME-common-test-extra
+      - documentIndex: 1
+        equal:
+          path: spec.template.spec.containers[0].ports
+          value:
+          - containerPort: 1234
+            name: extra
+            protocol: TCP
+
   - it: ports should match only when service selectors are contained in controller
     set:
       controller:
