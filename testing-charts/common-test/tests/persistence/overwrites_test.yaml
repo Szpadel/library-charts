@@ -1,0 +1,57 @@
+suite: persistence overwrites
+templates:
+  - common.yaml
+tests:
+- it: default not add persistence when controller is not enabled
+  set:
+    persistence: &persistence
+      custom:
+        enabled: false
+        type: pvc
+        accessMode: ReadWriteOnce
+        size: 1Gi
+    additionalControllers:
+      one:
+        enabled: false
+        type: deployment
+        image:
+          inherit: true
+        persistence:
+          custom:
+            enabled: true
+  asserts:
+    - hasDocuments:
+        count: 2
+    - documentIndex: 0
+      isKind:
+        of: Deployment
+    - documentIndex: 1
+      isKind:
+        of: Service
+- it: should include persistence that is enabled by children
+  set:
+    persistence: *persistence
+    additionalControllers:
+      one:
+        enabled: true
+        type: deployment
+        image:
+          inherit: true
+        persistence:
+          custom:
+            enabled: true
+  asserts:
+    - hasDocuments:
+        count: 4
+    - documentIndex: 0
+      isKind:
+        of: PersistentVolumeClaim
+    - documentIndex: 1
+      isKind:
+        of: Deployment
+    - documentIndex: 2
+      isKind:
+        of: Deployment
+    - documentIndex: 3
+      isKind:
+        of: Service
