@@ -67,7 +67,7 @@
   {{- $_ := set $ "ObjectValues" (dict "controller" $values) -}}
   {{- include "common.controller.probes" . | trim | nindent 2 }}
   {{- $_ := unset $.ObjectValues "controller" }}
-  {{- with .Values.resources }}
+  {{- with default $values.resources .Values.resources }}
   resources:
     {{- toYaml . | nindent 4 }}
   {{- end }}
