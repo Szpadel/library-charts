@@ -2,10 +2,10 @@ apiVersion: v2
 name: common
 description: Function library for charts
 type: library
-version: 0.20.0
+version: 0.20.1
 kubeVersion: ">=1.16.0-0"
 keywords:
-  - common
+- common
 home: https://github.com/Szpadel/library-charts
 maintainers:
 - name: Szpadel
