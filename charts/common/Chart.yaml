@@ -2,7 +2,7 @@ apiVersion: v2
 name: common
 description: Function library for charts
 type: library
-version: 0.21.3
+version: 0.22.0
 kubeVersion: ">=1.16.0-0"
 keywords:
 - common
