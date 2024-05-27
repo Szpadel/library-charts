@@ -29,6 +29,9 @@ metadata:
   {{- end }}
 data:
 {{- with $values.data }}
-  {{- tpl (toYaml .) $ | nindent 2 }}
+{{- range $key, $val := . }}
+  {{ $key }}: |-
+    {{ tpl $val $ | nindent 4 }}
+{{- end }}
 {{- end }}
 {{- end }}
