@@ -774,7 +774,7 @@ addons:
       # -- Specify the promtail image
       repository: docker.io/grafana/promtail
       # -- Specify the promtail image tag
-      tag: 2.9.9
+      tag: 2.9.10
       # -- Specify the promtail image pull policy
       pullPolicy: IfNotPresent
 
