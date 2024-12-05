@@ -585,7 +585,7 @@ addons:
         # -- Specify the Gluetun image
         repository: docker.io/qmcgaw/gluetun
         # -- Specify the Gluetun image tag
-        tag: v3.39.0
+        tag: v3.39.1
         # -- Specify the Gluetun image pull policy
         pullPolicy: IfNotPresent
 
@@ -774,7 +774,7 @@ addons:
       # -- Specify the promtail image
       repository: docker.io/grafana/promtail
       # -- Specify the promtail image tag
-      tag: 2.9.10
+      tag: 2.9.11
       # -- Specify the promtail image pull policy
       pullPolicy: IfNotPresent
 
