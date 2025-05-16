@@ -585,7 +585,7 @@ addons:
         # -- Specify the Gluetun image
         repository: docker.io/qmcgaw/gluetun
         # -- Specify the Gluetun image tag
-        tag: v3.39.0
+        tag: v3.40.0
         # -- Specify the Gluetun image pull policy
         pullPolicy: IfNotPresent
 
@@ -681,7 +681,7 @@ addons:
       # -- Specify the code-server image
       repository: ghcr.io/coder/code-server
       # -- Specify the code-server image tag
-      tag: 4.93.1
+      tag: 4.100.2
       # -- Specify the code-server image pull policy
       pullPolicy: IfNotPresent
 
